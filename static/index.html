@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>BombRush — Multiplayer Word Battle</title>
+    <meta name="description" content="A real-time multiplayer word party game. Type fast to pass the ticking bomb before it blows up! Play together on mobile and laptop with a simple room code.">
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="bg-grid"></div>
+
+    <!-- Header Navigation -->
+    <header>
+        <div class="logo">
+            <span class="logo-bomb">💣</span>
+            <div>BOMB<span>RUSH</span></div>
+        </div>
+        <div class="header-actions">
+            <button id="btnRules" class="icon-btn" title="How to Play" aria-label="How to play">❓</button>
+            <button id="btnMute" class="icon-btn" title="Toggle Sound" aria-label="Toggle Sound">🔊</button>
+        </div>
+    </header>
+
+    <main>
+        <!-- SCREEN 1: HOME & SETUP -->
+        <section id="screenHome" class="screen active">
+            <div class="card" style="max-width: 480px; text-align: center;">
+                <div class="hero-tag">🔥 Real-Time Multiplayer</div>
+                <h1 class="title-large">Pass The <span>Bomb!</span></h1>
+                <p class="subtitle">Think fast, type a word containing the letters, and pass the bomb before it blows up in your face!</p>
+
+                <div class="form-group" style="text-align: left;">
+                    <label for="inputPlayerName" class="form-label">Your Nickname</label>
+                    <input type="text" id="inputPlayerName" class="input-text" placeholder="Enter your name..." maxlength="14" autocomplete="off" spellcheck="false">
+                </div>
+
+                <div class="form-group" style="text-align: left;">
+                    <label class="form-label">Choose Avatar</label>
+                    <div class="avatar-grid" id="avatarGrid">
+                        <button type="button" class="avatar-option selected" data-avatar="😎">😎</button>
+                        <button type="button" class="avatar-option" data-avatar="🤠">🤠</button>
+                        <button type="button" class="avatar-option" data-avatar="🐱">🐱</button>
+                        <button type="button" class="avatar-option" data-avatar="🤖">🤖</button>
+                        <button type="button" class="avatar-option" data-avatar="🦊">🦊</button>
+                        <button type="button" class="avatar-option" data-avatar="🦄">🦄</button>
+                        <button type="button" class="avatar-option" data-avatar="⚡">⚡</button>
+                        <button type="button" class="avatar-option" data-avatar="🍕">🍕</button>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <button id="btnCreateRoom" class="btn btn-primary" style="margin-bottom: 12px;">
+                        <span>🚀</span> Create New Room
+                    </button>
+                    
+                    <div style="display: flex; align-items: center; gap: 10px; margin: 16px 0;">
+                        <hr style="flex: 1; border: none; border-top: 1px solid var(--bg-card-border);">
+                        <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 700;">OR JOIN ROOM</span>
+                        <hr style="flex: 1; border: none; border-top: 1px solid var(--bg-card-border);">
+                    </div>
+
+                    <div style="display: flex; gap: 10px;">
+                        <input type="text" id="inputRoomCode" class="input-text" placeholder="CODE (e.g. 7XKP)" maxlength="6" style="text-transform: uppercase; text-align: center; letter-spacing: 2px;">
+                        <button id="btnJoinRoom" class="btn btn-accent" style="width: auto; padding: 0 24px;">Join</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SCREEN 2: ROOM LOBBY -->
+        <section id="screenLobby" class="screen">
+            <div class="card" style="max-width: 600px;">
+                <div class="lobby-header">
+                    <div class="room-badge-container" id="btnCopyCode" title="Click to copy invite link">
+                        <div class="room-badge-label">ROOM CODE</div>
+                        <div class="room-code-display" id="lobbyRoomCode">----</div>
+                        <div class="copy-hint">
+                            <span id="copyIcon">📋</span> <span id="copyText">Click to copy invite link</span>
+                        </div>
+                    </div>
+                    <p style="color: var(--text-secondary); font-size: 0.95rem;">Share this code with friends so they can join from their phones or laptops!</p>
+                </div>
+
+                <!-- Connected Players -->
+                <div class="players-list-title">
+                    <span>PLAYERS IN LOBBY (<span id="lobbyPlayerCount">0</span>)</span>
+                    <span style="font-size: 0.8rem; color: var(--accent-green); font-weight: 700;">● LIVE SYNC</span>
+                </div>
+                <div class="players-grid" id="lobbyPlayersGrid">
+                    <!-- Populated dynamically via JS -->
+                </div>
+
+                <!-- Host Settings -->
+                <div class="settings-box" id="hostSettingsBox">
+                    <div class="settings-title">⚙️ Host Settings</div>
+                    <div class="settings-row" style="margin-bottom: 12px;">
+                        <span style="font-size: 0.9rem; font-weight: 600; color: var(--text-secondary);">Turn Timer:</span>
+                        <div class="pill-selector" id="timerSelector">
+                            <div class="pill-option" data-timer="5.0">5s (Blitz)</div>
+                            <div class="pill-option active" data-timer="8.0">8s (Normal)</div>
+                            <div class="pill-option" data-timer="11.0">11s (Chill)</div>
+                        </div>
+                    </div>
+                    <div class="settings-row">
+                        <span style="font-size: 0.9rem; font-weight: 600; color: var(--text-secondary);">Player Lives:</span>
+                        <div class="pill-selector" id="livesSelector">
+                            <div class="pill-option" data-lives="1">1 (Hardcore)</div>
+                            <div class="pill-option" data-lives="2">2</div>
+                            <div class="pill-option active" data-lives="3">3 Lives</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Start Action -->
+                <button id="btnStartGame" class="btn btn-primary" style="font-size: 1.2rem; padding: 18px;">
+                    💣 START BATTLE
+                </button>
+                <div id="waitingForHostText" style="display: none; text-align: center; color: var(--accent-gold); font-weight: 700; margin-top: 14px;">
+                    ⏳ Waiting for host to start the game...
+                </div>
+            </div>
+        </section>
+
+        <!-- SCREEN 3: GAME ARENA -->
+        <section id="screenGame" class="screen">
+            <div class="game-container">
+                <!-- Players in Game Strip -->
+                <div class="game-players-strip" id="gamePlayersStrip">
+                    <!-- Dynamic live player pills with hearts -->
+                </div>
+
+                <!-- Turn Alert Banner -->
+                <div class="turn-banner" id="turnBanner">
+                    <span id="turnBannerEmoji">💣</span> <span id="turnBannerText">Waiting...</span>
+                </div>
+
+                <!-- Center Animated Bomb Arena -->
+                <div class="bomb-arena" id="bombArena">
+                    <!-- SVG Circular Progress Bar -->
+                    <svg class="timer-svg" viewBox="0 0 280 280">
+                        <circle class="timer-circle-bg" cx="140" cy="140" r="125" />
+                        <circle id="timerCircleProgress" class="timer-circle-progress" cx="140" cy="140" r="125" stroke-dasharray="785.4" stroke-dashoffset="0" />
+                    </svg>
+
+                    <!-- Animated Bomb Sphere -->
+                    <div class="bomb-graphic" id="bombGraphic">
+                        <div class="bomb-cap"></div>
+                        <div class="bomb-fuse"></div>
+                        <canvas id="sparkCanvas" width="60" height="60"></canvas>
+
+                        <!-- Centered Syllable Prompt -->
+                        <div class="prompt-hint">CONTAINS</div>
+                        <div class="prompt-letters" id="promptDisplay">--</div>
+                        <div class="prompt-hint" id="timerSecondsText">8.0s</div>
+                    </div>
+                </div>
+
+                <!-- Word Submission Input Field -->
+                <div class="word-input-container">
+                    <form id="wordForm" onsubmit="return false;">
+                        <input type="text" id="wordInput" class="input-word" placeholder="TYPE YOUR WORD..." autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false">
+                        <button type="submit" id="btnSubmitWord" class="btn-submit-word" title="Submit Word">➔</button>
+                    </form>
+                </div>
+
+                <div class="input-feedback" id="inputFeedback"></div>
+
+                <!-- Word History Pills -->
+                <div class="words-history" id="wordsHistory">
+                    <!-- Populated as words are played -->
+                </div>
+
+                <!-- In-Game Emoji Reactions Bar -->
+                <div class="reactions-bar">
+                    <button class="reaction-btn" data-emoji="🔥" title="Fire">🔥</button>
+                    <button class="reaction-btn" data-emoji="💣" title="Bomb">💣</button>
+                    <button class="reaction-btn" data-emoji="😱" title="Shocked">😱</button>
+                    <button class="reaction-btn" data-emoji="👏" title="Clap">👏</button>
+                    <button class="reaction-btn" data-emoji="😂" title="Laugh">😂</button>
+                    <button class="reaction-btn" data-emoji="💀" title="Dead">💀</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- VICTORY / GAME OVER MODAL -->
+    <div id="modalGameOver" class="modal-overlay">
+        <div class="modal-content">
+            <div class="winner-card">
+                <div class="winner-crown">👑</div>
+                <div class="winner-avatar" id="winnerAvatar">😎</div>
+                <h2 class="winner-title" id="winnerName">Sahil Wins!</h2>
+                <div class="winner-score" id="winnerScore">Score: 1,450 pts</div>
+
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-val" id="statLongestWord">SPECTACULAR</div>
+                        <div class="stat-label">Longest Word</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-val" id="statTotalWords">24</div>
+                        <div class="stat-label">Total Words Passed</div>
+                    </div>
+                </div>
+
+                <button id="btnPlayAgain" class="btn btn-primary" style="font-size: 1.15rem; padding: 16px;">
+                    🔄 Play Again (Rematch)
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- HOW TO PLAY / RULES MODAL -->
+    <div id="modalRules" class="modal-overlay">
+        <div class="modal-content">
+            <button id="btnCloseRules" class="modal-close-btn">&times;</button>
+            <h2 style="font-size: 1.6rem; font-weight: 800; margin-bottom: 18px; color: var(--accent-gold); display: flex; align-items: center; gap: 8px;">
+                <span>💣</span> How To Play
+            </h2>
+
+            <div style="display: flex; flex-direction: column; gap: 16px; color: var(--text-secondary); line-height: 1.5; font-size: 0.95rem;">
+                <div style="display: flex; gap: 12px; align-items: flex-start;">
+                    <span style="background: var(--accent-orange); color: #000; font-weight: 900; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">1</span>
+                    <div><strong>Watch the Prompt:</strong> When the bomb points to you, look at the letters inside the bomb (e.g. <code>PRO</code>).</div>
+                </div>
+                <div style="display: flex; gap: 12px; align-items: flex-start;">
+                    <span style="background: var(--accent-cyan); color: #000; font-weight: 900; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">2</span>
+                    <div><strong>Type a Word Fast:</strong> Type any valid English word containing those letters (e.g. <code>PROJECT</code> or <code>PROBLEM</code>) and press Enter.</div>
+                </div>
+                <div style="display: flex; gap: 12px; align-items: flex-start;">
+                    <span style="background: var(--accent-red); color: #fff; font-weight: 900; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">3</span>
+                    <div><strong>Pass the Bomb:</strong> A correct word immediately passes the bomb to the next player. If your timer runs out, the bomb blows up and you lose 1 life (❤️❤️❤️). Last player alive wins!</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confetti Canvas -->
+    <canvas id="confettiCanvas"></canvas>
+
+    <!-- Scripts -->
+    <script src="/static/js/sound.js"></script>
+    <script src="/static/js/game.js"></script>
+</body>
+</html>
